@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         wget \
         libatlas-base-dev \
+        libopenblas-dev\
         libboost-all-dev \
         libgflags-dev \
         libgoogle-glog-dev \
@@ -34,9 +35,10 @@ RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
     pip install --upgrade pip && \
     cd python && for req in $(cat requirements.txt) pydot; do pip install $req; done && cd .. && \
     mkdir build && cd build && \
-    cmake -DCPU_ONLY=1 .. && \
+    cmake -DCPU_ONLY=1 -DBLAS=open .. && \
     make -j"$(nproc)"
 
+ENV OPENBLAS_NUM_THREADS=8
 ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
